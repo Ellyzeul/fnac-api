@@ -17,15 +17,16 @@ final class AuthTest extends TestCase
       'https://vendeur.fnac.com/api.php'
     );
 
-    $this->assertSame(true, $response->success);
     if($_ENV['PARTNER_ID'] === '00000000-0000-0000-0000-000000000000') {
-      $this->assertSame('ERROR', $response->body->attributes->status);
+      $this->assertSame(false, $response->success);
+      $this->assertSame('fnac_error', $response->body->type);
       $this->assertSame(
         'Authentication failed : one of the parameters (partner_id, key, shop_id) is invalid', 
-        $response->body->error
+        $response->body->message
       );
     }
     else {
+      $this->assertSame(true, $response->success);
       $this->assertSame('OK', $response->body->attributes->status);
       $this->assertSame('string', gettype($response->body->token));
       $this->assertSame('string', gettype($response->body->validity));

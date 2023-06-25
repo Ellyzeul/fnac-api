@@ -17,6 +17,23 @@ class Auth
     </auth>
     XML);
 
+    return Auth::handleResponse($response);
+  }
+
+  private static function handleResponse(Response $response)
+  {
+    $body = $response->body;
+
+    if(!$response->success) return new Response(false, [
+      'type' => 'curl_error', 
+      'message' => "[$body->errno] - $body->error"
+    ]);
+
+    if(!isset($body->token)) return new Response(false, [
+      'type' => 'fnac_error', 
+      'message' => $body->error
+    ]);
+
     return $response;
   }
 }
