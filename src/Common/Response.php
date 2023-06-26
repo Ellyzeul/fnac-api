@@ -1,5 +1,5 @@
 <?php
-namespace FNAC;
+namespace FNAC\Common;
 
 class Response
 {

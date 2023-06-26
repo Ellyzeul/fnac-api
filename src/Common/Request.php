@@ -1,9 +1,9 @@
 <?php
-namespace FNAC;
+namespace FNAC\Common;
 
-use FNAC\Response;
+use FNAC\Common\Response;
 
-class Utils
+class Request
 {
   /**
    * Realiza uma requisição POST enviando um XML
@@ -15,17 +15,17 @@ class Utils
    */
   public static function postXML(string $url, string $body): Response
   {
-    $ch = Utils::getCurlHandleForPostXML($url, $body);
+    $ch = Request::getCurlHandle($url, $body);
 
     $rawResponse = curl_exec($ch);
-    $response = Utils::handlePostXMLResponse($rawResponse, $ch);
+    $response = Request::handleResponse($rawResponse, $ch);
     
     curl_close($ch);
 
     return $response;
   }
 
-  private static function getCurlHandleForPostXML(string $url, string $body): \CurlHandle
+  private static function getCurlHandle(string $url, string $body): \CurlHandle
   {
     $ch = curl_init();
 
@@ -43,7 +43,7 @@ class Utils
     return $ch;
   }
 
-  private static function handlePostXMLResponse(string | bool $response, \CurlHandle $ch): Response
+  private static function handleResponse(string | bool $response, \CurlHandle $ch): Response
   {
     if($response === false) {
       $errno = curl_errno($ch);
@@ -55,7 +55,7 @@ class Utils
       ]);
     }
 
-    $escaped = Utils::escapeXMLSpecialChars($response);
+    $escaped = Request::escapeXMLSpecialChars($response);
     $xml = simplexml_load_string($escaped, \SimpleXMLElement::class, LIBXML_NOCDATA);
     $json = json_encode($xml);
     $attrHandledJson = str_replace('@', '', $json);
